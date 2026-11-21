@@ -1,4 +1,4 @@
-name: Build TASTIVIU Android APK
+8name: Build TASTIVIU Android APK
 
 on:
   push:
@@ -51,7 +51,7 @@ jobs:
         working-directory: buildsrc/TASTIVIU_MOBILE_BETA_5_ONECLICK/android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          ./gradlew assembleRelease --no-daemon --stacktrace
 
       - name: Prepare APK
         run: |
