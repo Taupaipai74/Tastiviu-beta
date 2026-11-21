@@ -1,4 +1,4 @@
-8name: Build TASTIVIU Android APK
+name: Build TASTIVIU Android APK
 
 on:
   push:
