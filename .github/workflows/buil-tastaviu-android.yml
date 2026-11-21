@@ -55,7 +55,7 @@ jobs:
 
       - name: Prepare APK
         run: |
-          cp buildsrc/TASTIVIU_MOBILE_BETA_5_ONECLICK/android/app/build/outputs/apk/debug/app-debug.apk TASTIVIU-BETA-ANDROID.apk
+          cp buildsrc/TASTIVIU_MOBILE_BETA_5_ONECLICK/android/app/build/outputs/apk/release/app-release.apk TASTIVIU-BETA-ANDROID.apk
           ls -lh TASTIVIU-BETA-ANDROID.apk
 
       - name: Upload APK
