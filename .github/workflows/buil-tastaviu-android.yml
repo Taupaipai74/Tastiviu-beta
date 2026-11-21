@@ -1,1 +1,66 @@
+name: Build TASTIVIU Android APK
 
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: '**/package.json'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Unpack TASTIVIU project
+        run: |
+          test -f TASTIVIU_ANDROID_ONECLICK.zip
+          mkdir -p buildsrc
+          unzip -q TASTIVIU_ANDROID_ONECLICK.zip -d buildsrc
+          test -f buildsrc/TASTIVIU_MOBILE_BETA_5_ONECLICK/package.json
+
+      - name: Install JavaScript dependencies
+        working-directory: buildsrc/TASTIVIU_MOBILE_BETA_5_ONECLICK
+        run: npm install --legacy-peer-deps --no-audit --no-fund
+
+      - name: Generate native Android project
+        working-directory: buildsrc/TASTIVIU_MOBILE_BETA_5_ONECLICK
+        env:
+          CI: '1'
+        run: npx expo prebuild --platform android --clean --non-interactive
+
+      - name: Build installable debug APK
+        working-directory: buildsrc/TASTIVIU_MOBILE_BETA_5_ONECLICK/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Prepare APK
+        run: |
+          cp buildsrc/TASTIVIU_MOBILE_BETA_5_ONECLICK/android/app/build/outputs/apk/debug/app-debug.apk TASTIVIU-BETA-ANDROID.apk
+          ls -lh TASTIVIU-BETA-ANDROID.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: TASTIVIU-BETA-ANDROID
+          path: TASTIVIU-BETA-ANDROID.apk
+          retention-days: 30
